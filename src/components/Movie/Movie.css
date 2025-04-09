@@ -1,0 +1,10 @@
+.movie {
+  max-width: 1010px;
+  margin: 0 auto;
+  background-color: #fff;
+}
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import './RatingBadge.css';
 
 export default function RatingBadge({ rating }) {
   const safeRating = typeof rating === 'number' ? rating : 0;
@@ -13,19 +14,8 @@ export default function RatingBadge({ rating }) {
 
   return (
     <div
-      style={{
-        backgroundColor: 'transparent',
-        fontSize: '12px',
-        fontWeight: '400',
-        borderRadius: '50%',
-        border: `2px solid ${getBorderColor(safeRating)}`,
-        height: '30px',
-        width: '30px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'black',
-      }}
+      className="rating-badge"
+      style={{ border: `2px solid ${getBorderColor(safeRating)}` }}
     >
       {formattedRating}
     </div>

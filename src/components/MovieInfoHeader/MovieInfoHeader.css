@@ -10,12 +10,14 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 228px;
+  max-width: 240px;
 }
 
 .movie-info-date {
   color: #827e7e;
   font-size: 12px;
+  margin: 0;
+  padding: 0;
 }
 
 .movie-info-title {
@@ -38,6 +40,10 @@
   white-space: nowrap;
   margin: 0 !important;
   padding: 0 !important;
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 768px) {

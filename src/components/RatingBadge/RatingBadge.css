@@ -1,0 +1,12 @@
+.rating-badge {
+  background-color: transparent;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}

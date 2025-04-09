@@ -1,63 +1,54 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs } from 'antd';
-import axios from 'axios';
+import { createGuestSession } from '../../api/guestSession';
+import { fetchRatedMovies } from '../../api/ratedMovies';
 import Movie from '../Movie';
 import RatedMovies from '../RatedMovies';
 import { GenresProvider } from '../GenresContext';
-
-const API_KEY = '716129ae124d90d45aa6c2493a69e577';
 
 function App() {
   const [guestSessionId, setGuestSessionId] = useState(null);
   const [ratedMovies, setRatedMovies] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
+  const [totalPages, setTotalPages] = useState(0);
 
-  const createGuestSession = useCallback(async () => {
-    try {
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/authentication/guest_session/new?api_key=${API_KEY}`,
-      );
-      const newSessionId = res.data.guest_session_id;
-      setGuestSessionId(newSessionId);
-      return newSessionId;
-    } catch (err) {
-      console.error('Ошибка создания гостевой сессии:', err);
-      return null;
-    }
+  // Создание гостевой сессии
+  const createGuestSessionHandler = useCallback(async () => {
+    const sessionId = await createGuestSession();
+    setGuestSessionId(sessionId);
   }, []);
 
-  const fetchRatedMovies = useCallback(async () => {
-    let sessionId = guestSessionId;
+  // Получение оцененных фильмов
+  const fetchRatedMoviesData = useCallback(
+    async (page = 1) => {
+      if (!guestSessionId) {
+        await createGuestSessionHandler();
+      }
 
-    if (!sessionId) {
-      sessionId = await createGuestSession();
-      if (!sessionId) return;
-    }
-
-    try {
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/guest_session/${sessionId}/rated/movies?api_key=${API_KEY}`,
-      );
-      setRatedMovies(res.data.results || []);
-    } catch (err) {
-      console.error('Ошибка загрузки оцененных фильмов:', err);
-    }
-  }, [guestSessionId, createGuestSession]);
+      const result = await fetchRatedMovies(guestSessionId, page);
+      if (result) {
+        setRatedMovies(result.movies);
+        setTotalPages(result.totalPages);
+      }
+    },
+    [guestSessionId, createGuestSessionHandler],
+  );
 
   const handleRatingUpdate = () => {
-    fetchRatedMovies();
+    fetchRatedMoviesData();
   };
 
   useEffect(() => {
     if (activeTab === '2') {
-      fetchRatedMovies();
+      fetchRatedMoviesData();
     }
-  }, [activeTab, fetchRatedMovies]);
+  }, [activeTab, fetchRatedMoviesData]);
+
   useEffect(() => {
     if (!guestSessionId) {
-      createGuestSession();
+      createGuestSessionHandler();
     }
-  }, [createGuestSession, guestSessionId]);
+  }, [guestSessionId, createGuestSessionHandler]);
 
   return (
     <GenresProvider>
@@ -82,7 +73,8 @@ function App() {
             children: (
               <RatedMovies
                 ratedMovies={ratedMovies}
-                fetchRatedMovies={fetchRatedMovies}
+                fetchRatedMovies={fetchRatedMoviesData}
+                totalPages={totalPages}
               />
             ),
           },

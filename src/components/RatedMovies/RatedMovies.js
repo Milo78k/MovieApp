@@ -5,11 +5,10 @@ import LoadingSpinner from '../LoadingSpinner';
 import ShowAlert from '../ShowAlert/ShowAlert';
 import PaginationComponent from '../PaginationComponent';
 
-function RatedMovies({ ratedMovies, fetchRatedMovies }) {
+function RatedMovies({ ratedMovies, fetchRatedMovies, totalPages }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,8 +16,7 @@ function RatedMovies({ ratedMovies, fetchRatedMovies }) {
       setError('');
 
       try {
-        await fetchRatedMovies();
-        setTotalResults(ratedMovies.length);
+        await fetchRatedMovies(page);
       } catch {
         setError('Не удалось загрузить оцененные фильмы.');
       } finally {
@@ -27,10 +25,7 @@ function RatedMovies({ ratedMovies, fetchRatedMovies }) {
     };
 
     fetchData();
-  }, [fetchRatedMovies, ratedMovies.length]);
-  useEffect(() => {
-    setTotalResults(ratedMovies.length);
-  }, [ratedMovies]);
+  }, [fetchRatedMovies, page]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ShowAlert message={error} type="error" />;
@@ -54,7 +49,7 @@ function RatedMovies({ ratedMovies, fetchRatedMovies }) {
       >
         <PaginationComponent
           current={page}
-          total={totalResults}
+          total={totalPages * 20}
           onPageChange={setPage}
         />
       </div>

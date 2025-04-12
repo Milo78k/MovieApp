@@ -4,11 +4,13 @@ import './MoviePoster.css';
 
 function MoviePoster({ movie }) {
   const [error, setError] = useState(false);
-  const imgSrc = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
+  const imgSrc = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : '';
   return (
     <div className="poster-container">
-      {error ? (
+      {error || !imgSrc ? (
         <Avatar
           shape="square"
           size="100%"

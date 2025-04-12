@@ -6,17 +6,23 @@ import Rating from '../Rating';
 import { rateMovie } from '../../api/rateMovie';
 import './MovieCard.css';
 
-function MovieCard({ movie, guestSessionId, rating: initialRating }) {
-  const [rating, setRating] = useState(initialRating || movie.rating || 0);
+function MovieCard({
+  movie,
+  guestSessionId,
+  rating: initialRating,
+  onRateSuccess,
+}) {
+  const [rating, setRating] = useState(initialRating || 0);
 
   useEffect(() => {
-    setRating(movie.rating);
-  }, [movie.rating]);
+    setRating(initialRating || 0);
+  }, [initialRating]);
 
   const handleRate = async (value) => {
     try {
       await rateMovie(movie.id, value, guestSessionId);
       setRating(value);
+      onRateSuccess?.(value);
     } catch (err) {
       console.error('Ошибка при оценке фильма:', err);
     }

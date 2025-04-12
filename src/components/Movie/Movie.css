@@ -1,10 +1,38 @@
 .movie {
-  max-width: 1010px;
+  max-width: 1000px;
   margin: 0 auto;
-  background-color: #fff;
 }
-.pagination-wrapper {
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+.movie-list.centered {
+  justify-content: center;
+}
+
+.movie-card-wrapper {
+  flex: 1 1 100%;
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+}
+
+@media (min-width: 966px) {
+  .movie-card-wrapper {
+    flex: 1 1 48%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .movie-card-wrapper {
+    flex: 1 1 48%;
+  }
+}
+
+.pagination-wrapper {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
 }

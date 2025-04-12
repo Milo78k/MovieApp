@@ -8,7 +8,7 @@ function Rating({ value, onChange }) {
     <Rate
       className="rating"
       allowHalf
-      defaultValue={value}
+      value={value}
       count={10}
       onChange={onChange}
     />

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col } from 'antd';
 import MovieCard from '../MovieCard';
 import LoadingSpinner from '../LoadingSpinner';
 import ShowAlert from '../ShowAlert/ShowAlert';
@@ -8,13 +7,14 @@ import SearchInput from '../ SearchInput';
 import './Movie.css';
 import { searchMovies } from '../../api/movies';
 
-function Movie({ guestSessionId, handleRatingUpdate }) {
+function Movie({ guestSessionId, handleRatingUpdate, setRatedMovies }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [userRatings, setUserRatings] = useState({});
 
   const fetchMovies = useCallback(async () => {
     if (!query.trim()) return;
@@ -34,6 +34,24 @@ function Movie({ guestSessionId, handleRatingUpdate }) {
     }
   }, [query, page]);
 
+  const handleRate = (movieId, value, movieData) => {
+    setUserRatings((prev) => ({
+      ...prev,
+      [movieId]: value,
+    }));
+    setRatedMovies?.((prev) => {
+      const alreadyRated = prev.find((m) => m.id === movieId);
+      if (alreadyRated) {
+        return prev.map((m) =>
+          m.id === movieId ? { ...m, rating: value } : m,
+        );
+      }
+
+      return [...prev, { ...movieData, rating: value }];
+    });
+    handleRatingUpdate?.();
+  };
+
   useEffect(() => {
     fetchMovies();
   }, [fetchMovies]);
@@ -45,25 +63,20 @@ function Movie({ guestSessionId, handleRatingUpdate }) {
     <div className="movie">
       <SearchInput query={query} setQuery={setQuery} setPage={setPage} />
       {movies.length === 0 && query && !loading && <p>Ничего не найдено</p>}
-      <Row gutter={[16, 16]} justify="center">
+
+      <div className={`movie-list ${movies.length === 1 ? 'centered' : ''}`}>
         {movies.map((movie) => (
-          <Col
-            key={movie.id}
-            xs={24}
-            sm={24}
-            md={24}
-            lg={12}
-            xl={12}
-            style={{ margin: '0' }}
-          >
+          <div key={movie.id} className="movie-card-wrapper">
             <MovieCard
               movie={movie}
               guestSessionId={guestSessionId}
-              onRateSuccess={handleRatingUpdate}
+              onRateSuccess={(value) => handleRate(movie.id, value, movie)}
+              rating={userRatings[movie.id] ?? movie.rating}
             />
-          </Col>
+          </div>
         ))}
-      </Row>
+      </div>
+
       <div className="pagination-wrapper">
         <PaginationComponent
           current={page}

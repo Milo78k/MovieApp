@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col } from 'antd';
 import MovieCard from '../MovieCard';
 import LoadingSpinner from '../LoadingSpinner';
 import ShowAlert from '../ShowAlert/ShowAlert';
 import PaginationComponent from '../PaginationComponent';
 
-function RatedMovies({ ratedMovies, fetchRatedMovies, totalPages }) {
+function RatedMovies({
+  ratedMovies,
+  fetchRatedMovies,
+  totalPages,
+  setRatedMovies,
+  guestSessionId,
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
@@ -31,22 +36,28 @@ function RatedMovies({ ratedMovies, fetchRatedMovies, totalPages }) {
   if (error) return <ShowAlert message={error} type="error" />;
 
   return (
-    <div
-      style={{
-        maxWidth: '1010px',
-        margin: '0 auto',
-      }}
-    >
-      <Row gutter={[16, 16]} justify="center">
-        {ratedMovies.map((movie) => (
-          <Col key={movie.id} xs={24} sm={24} md={24} lg={12} xl={12}>
-            <MovieCard movie={movie} />
-          </Col>
-        ))}
-      </Row>
+    <div style={{ maxWidth: '1010px', margin: '0 auto' }} className="movie">
       <div
-        style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}
+        className={`movie-list ${ratedMovies.length === 1 ? 'centered' : ''}`}
       >
+        {ratedMovies.map((movie) => (
+          <div key={movie.id} className="movie-card-wrapper">
+            <MovieCard
+              movie={movie}
+              guestSessionId={guestSessionId}
+              rating={movie.rating}
+              onRateSuccess={(value) => {
+                setRatedMovies((prev) =>
+                  prev.map((m) =>
+                    m.id === movie.id ? { ...m, rating: value } : m,
+                  ),
+                );
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="pagination-wrapper">
         <PaginationComponent
           current={page}
           total={totalPages * 20}

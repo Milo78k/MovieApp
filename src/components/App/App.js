@@ -64,6 +64,7 @@ function App() {
               <Movie
                 guestSessionId={guestSessionId}
                 onRateSuccess={handleRatingUpdate}
+                setRatedMovies={setRatedMovies}
               />
             ),
           },
@@ -75,6 +76,8 @@ function App() {
                 ratedMovies={ratedMovies}
                 fetchRatedMovies={fetchRatedMoviesData}
                 totalPages={totalPages}
+                setRatedMovies={setRatedMovies}
+                guestSessionId={guestSessionId}
               />
             ),
           },
